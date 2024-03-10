@@ -1,0 +1,15 @@
+{
+    "name": "djs-barebones",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "scripts": {
+        "dev": "node --watch --no-warnings .",
+        "start": "node ."
+    },
+    "dependencies": {
+        "commandkit": "^0.1.10",
+        "discord.js": "^14.14.1",
+        "dotenv": "^16.4.5",
+        "nodemon": "^3.1.0"
+    }
+}
