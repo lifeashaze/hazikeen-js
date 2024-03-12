@@ -10,6 +10,8 @@
         "commandkit": "^0.1.10",
         "discord.js": "^14.14.1",
         "dotenv": "^16.4.5",
+        "mongodb": "^6.5.0",
+        "mongoose": "^8.2.1",
         "nodemon": "^3.1.0"
     }
 }

@@ -11,11 +11,12 @@ const client = new Client({
     ],
 });
 
+
 new CommandKit({
     client,
     eventsPath: `${__dirname}/events`,
     commandsPath: `${__dirname}/commands`,
-    bulkRegister: true,
+    bulkRegister:  true,
 })
 
 client.login("MTIxNTI0ODAwNjAxNDU3NDU5Mg.Gwpsru.jhUj82MYtXUJPIEu1adsaRY62zMJBFNG0QS62U")
