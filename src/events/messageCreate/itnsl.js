@@ -12,6 +12,19 @@ async function fetchData(){
       const collection = db.collection("ITNS_LAB");
       const data = await collection.find({}).toArray();
       assignments = []
+
+      const changeStream = collection.watch();
+
+      changeStream.on('change', async (change) => {
+        console.log('Change event:', change);
+        // Fetch data from the database whenever there's a change
+        const data = await collection.find({}).toArray();
+        assignments = data.map((document) => ({
+          title: document.title,
+          dueDate: document.due_date,
+        }));
+        console.log("Assignments Fetched!");
+      });
       
     
       data.forEach((document) => {
@@ -35,7 +48,7 @@ module.exports = async (message, client) => {
     await fetchData()
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
-      .setTitle("IT Network Security Lab Assignments")
+      .setTitle("ITDSL Assignments")
 
     try {
       assignments.forEach((assignment) => {
