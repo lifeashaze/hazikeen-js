@@ -17,6 +17,7 @@ new CommandKit({
     client,
     eventsPath: `${__dirname}/events`,
     commandsPath: `${__dirname}/commands`,
+    bulkRegister: true,
 })
 
 startDBWatcher()

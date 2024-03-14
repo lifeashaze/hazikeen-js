@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { Client, GatewayIntentBits } = require("discord.js");
 
 const uri = "mongodb+srv://admin:FwhszxosD5x97RSk@hazikeen.kt06qvo.mongodb.net/";
@@ -19,35 +19,32 @@ async function startDBWatcher() {
     await mongoClient.connect();
     console.log("Connected to the MongoDB server dbWatcher.js");
     const db = mongoClient.db("classroom");
-    const collection = db.collection("ITNS_LAB");
-    const changeStream = collection.watch();
 
-    changeStream.on("change", async (change) => {
-      console.log("Change event:", change);
-      if (change.operationType === "update" && change.updateDescription.updatedFields.dueDate) {
-        // If there's an update and the dueDate field has been modified, send a notification message to the Discord channel
-        try {
-          await client.login("MTIxNTI0ODAwNjAxNDU3NDU5Mg.Gwpsru.jhUj82MYtXUJPIEu1adsaRY62zMJBFNG0QS62U");
-          const channel = await client.channels.fetch(channelId);
-          const changeDescription = formatChangeDescription(change); // Format change description
-          await channel.send(`A change has been detected in the due date of an assignment:\n${changeDescription}`);
-          await client.destroy(); // Disconnect the bot
-        } catch (error) {
-          console.error("Error sending notification:", error);
+    // Set up change streams for each collection
+    const collectionNames = ["ITNS_LAB", "ITDSL"]; // List of collection names to watch
+    collectionNames.forEach(async (collectionName) => {
+      const collection = db.collection(collectionName);
+      const changeStream = collection.watch();
+
+      changeStream.on("change", async (change) => {
+        console.log(`Change event on collection ${collectionName}:`, change);
+        if (change.operationType === "update") {
+          try {
+            await client.login("MTIxNTI0ODAwNjAxNDU3NDU5Mg.Gwpsru.jhUj82MYtXUJPIEu1adsaRY62zMJBFNG0QS62U");
+            const channel = await client.channels.fetch(channelId);
+            const documentId = change.documentKey._id;
+            const updatedDocument = await collection.findOne({ _id: new ObjectId(documentId) });
+            await channel.send(`A change has been detected in collection ${collectionName}:\n${JSON.stringify(updatedDocument, null, 2)}`);
+            await client.destroy();
+          } catch (error) {
+            console.error("Error sending notification:", error);
+          }
         }
-      }
+      });
     });
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
   }
-}
-
-// Helper function to format change description
-function formatChangeDescription(change) {
-  let description = "";
-  description += "Document updated:\n";
-  description += `Updated fields: ${JSON.stringify(change.updateDescription.updatedFields, null, 2)}`; // Include the updated fields
-  return description;
 }
 
 module.exports = { startDBWatcher };

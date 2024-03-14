@@ -6,12 +6,12 @@ const uri = "mongodb+srv://admin:FwhszxosD5x97RSk@hazikeen.kt06qvo.mongodb.net/"
 const mongoClient = new MongoClient(uri);
 
 
-async function fetchData() {
+async function fetchData(collectionName) {
   try {
     await mongoClient.connect();
     console.log("Connected to the MongoDB server");
     const db = mongoClient.db("classroom");
-    const collection = db.collection("ITNS_LAB");
+    const collection = db.collection(collectionName);
     const data = await collection.find({}).toArray();
     console.log("Assignments Fetched!");
     return data.map((document) => ({

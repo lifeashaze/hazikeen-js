@@ -5,7 +5,7 @@ const { calculateTimeRemaining } = require("../../helpers/timeUtils");
 module.exports = async (message, client) => {
 
   if (message.content === "=itnsl") {
-    const assignments = await fetchData()
+    const assignments = await fetchData("ITNS_LAB")
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("ITNSL Assignments");
