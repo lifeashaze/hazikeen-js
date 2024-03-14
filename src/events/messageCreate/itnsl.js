@@ -1,68 +1,31 @@
-const { EmbedBuilder } = require("discord.js");
-const { MongoClient } = require("mongodb");
-const uri ="mongodb+srv://admin:FwhszxosD5x97RSk@hazikeen.kt06qvo.mongodb.net/";
-const mongoClient = new MongoClient(uri);
-let assignments = [];
-
-async function fetchData(){
-  try {
-    await mongoClient.connect();
-      console.log("Connected to the MongoDB server");
-      const db = mongoClient.db("classroom");
-      const collection = db.collection("ITNS_LAB");
-      const data = await collection.find({}).toArray();
-      assignments = []
-
-      const changeStream = collection.watch();
-
-      changeStream.on('change', async (change) => {
-        console.log('Change event:', change);
-        // Fetch data from the database whenever there's a change
-        const data = await collection.find({}).toArray();
-        assignments = data.map((document) => ({
-          title: document.title,
-          dueDate: document.due_date,
-        }));
-        console.log("Assignments Fetched!");
-      });
-      
-    
-      data.forEach((document) => {
-        const assignment = {
-          title: document.title,
-          dueDate: document.due_date,
-        };
-        assignments.push(assignment);
-      });
-      console.log("Assignments Fetched!");
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-}
-
+const { EmbedBuilder, time } = require("discord.js");
+const { fetchData} = require("../../helpers/dataUtils");
+const { calculateTimeRemaining } = require("../../helpers/timeUtils");
 
 module.exports = async (message, client) => {
 
   if (message.content === "=itnsl") {
-    await fetchData()
+    const assignments = await fetchData()
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
-      .setTitle("ITDSL Assignments")
+      .setTitle("ITNSL Assignments");
 
     try {
       assignments.forEach((assignment) => {
+        const timeRemaining = calculateTimeRemaining(assignment.dueDate);
         embed.addFields({
           name: `${assignment.title}`,
-          value: `${assignment.dueDate}`,
+          value: `Due Date: ${assignment.dueDate} [${timeRemaining}]`,
         });
       });
 
 
-      message.channel.send({ embeds: [embed] });
+      await message.channel.send({ embeds: [embed] });
     } catch (error) {
       console.error("Error fetching data:", error);
       message.channel.send("Error fetching assignments.");
     }
   }
 };
+
+
