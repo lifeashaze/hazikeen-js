@@ -20,7 +20,6 @@ async function startDBWatcher() {
     console.log("Connected to the MongoDB server dbWatcher.js");
     const db = mongoClient.db("classroom");
 
-    // Set up change streams for each collection
     const collectionNames = ["ITNS_LAB", "ITDSL"]; // List of collection names to watch
     collectionNames.forEach(async (collectionName) => {
       const collection = db.collection(collectionName);

@@ -2,7 +2,6 @@ const { EmbedBuilder } = require("discord.js");
 const { fetchData} = require("../../helpers/dataUtils");
 const { calculateTimeRemaining } = require("../../helpers/timeUtils");
 
-
 module.exports = async (message, client) => {
 
   if (message.content === "=itdsl") {

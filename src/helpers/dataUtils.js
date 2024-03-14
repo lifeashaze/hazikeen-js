@@ -1,5 +1,3 @@
-// helpers/dataUtils.js
-
 const { MongoClient } = require("mongodb");
 
 const uri = "mongodb+srv://admin:FwhszxosD5x97RSk@hazikeen.kt06qvo.mongodb.net/";
