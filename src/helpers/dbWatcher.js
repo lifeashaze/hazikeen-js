@@ -1,5 +1,6 @@
 const { MongoClient, ObjectId } = require("mongodb");
 const { Client, GatewayIntentBits } = require("discord.js");
+const {calculateTimeRemaining} = require("./timeUtils");
 
 const uri = "mongodb+srv://admin:FwhszxosD5x97RSk@hazikeen.kt06qvo.mongodb.net/";
 const mongoClient = new MongoClient(uri);
@@ -20,7 +21,8 @@ async function startDBWatcher() {
     console.log("Connected to the MongoDB server dbWatcher.js");
     const db = mongoClient.db("classroom");
 
-    const collectionNames = ["ITNS_LAB", "ITDSL"]; // List of collection names to watch
+    const collectionNames = ["ITNS_LAB", "ITDSL"]; // Add more collection names as needed
+
     collectionNames.forEach(async (collectionName) => {
       const collection = db.collection(collectionName);
       const changeStream = collection.watch();
@@ -33,7 +35,14 @@ async function startDBWatcher() {
             const channel = await client.channels.fetch(channelId);
             const documentId = change.documentKey._id;
             const updatedDocument = await collection.findOne({ _id: new ObjectId(documentId) });
-            await channel.send(`A change has been detected in collection ${collectionName}:\n${JSON.stringify(updatedDocument, null, 2)}`);
+            const timeRemaining = calculateTimeRemaining(updatedDocument.due_date);
+
+            // Construct the message with updated fields
+            let message = `A **${collectionName}** Assignment was updated:\n`;
+            message += `Title: ${updatedDocument.title}\n`;
+            message += `Due Date: ${updatedDocument.due_date} [${timeRemaining}]`;
+
+            await channel.send(message);
             await client.destroy();
           } catch (error) {
             console.error("Error sending notification:", error);
