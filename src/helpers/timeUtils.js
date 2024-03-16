@@ -10,7 +10,7 @@ function calculateTimeRemaining(dueDateStr) {
     const due = new Date(year, month - 1, day, hoursDue, minutesDue); // Months are zero-indexed in JavaScript Date objects
   
     if (now > due) {
-      return "due date gone";
+      return "Due Date Passed";
     }
   
     // Calculate the difference in milliseconds
